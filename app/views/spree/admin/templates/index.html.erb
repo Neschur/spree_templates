@@ -1,1 +1,56 @@
-<%= @dirs %>
+<div class="row">
+  <div class="col-md-3">
+    <%= select_tag :domain,
+      options_for_select([''] + Spree::Store.all.map{|a|[a.name,a.code]}),
+        class: "form-control select-domain" %>
+  </div>
+</div>
+<div class="row">
+  <div class="templates-list col-md-6">
+  </div>
+</div>
+
+<div class="edititng hidden">
+  <textarea rows="15" cols="150" name="page" class="source form-control">
+
+
+  </textarea>
+  <br>
+  <div class="btn btn-success save-editing">
+    Save
+  </div>
+</div>
+
+
+
+<!-- TODO move to special file -->
+<script type="text/javascript">
+  function getDomainCode() {
+    return $('.select-domain').find(":selected").attr('value');
+  }
+
+  $('.select-domain').change(function(e){
+    $.get( "<%= admin_template_path('templates_list') %>?code="+getDomainCode(), function( data ) {
+      $('.edititng').addClass('hidden');
+      $('.templates-list').html(data)
+        $('.templates-list select').change(function(e){
+          page = $('.templates-list select').find(":selected").attr('value');
+          $.get( "<%= admin_template_path('page') %>?code="+getDomainCode() + "&page=" + page, function( data ) {
+            $('.source').html(data)
+            $('.source').parent().removeClass('hidden')
+          })
+        })
+    });
+  })
+
+  $('.save-editing').click(function(e){
+    template = $('.templates-list select').find(":selected").attr('value');
+
+    $.ajax({
+      type: 'PUT',
+      url: '<%= admin_template_path('update') %>',
+      data: {source: $('.source').html(), code: getDomainCode(), template: template},
+    })
+  })
+</script>
+
