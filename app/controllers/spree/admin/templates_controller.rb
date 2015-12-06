@@ -24,8 +24,10 @@ module Spree
       end
 
       def update
-        File.open(store_path + params[:template], 'w') { |file| file.write(params[:source]) }
-        debugger
+        template_name = store_path + params[:template]
+        FileUtils.mkdir_p(File.dirname(template_name))
+        File.open(template_name, 'w') { |file| file.write(params[:source]) }
+
         render text: ''
       end
 

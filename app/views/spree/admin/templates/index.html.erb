@@ -33,23 +33,25 @@
     $.get( "<%= admin_template_path('templates_list') %>?code="+getDomainCode(), function( data ) {
       $('.edititng').addClass('hidden');
       $('.templates-list').html(data)
-        $('.templates-list select').change(function(e){
-          page = $('.templates-list select').find(":selected").attr('value');
-          $.get( "<%= admin_template_path('page') %>?code="+getDomainCode() + "&page=" + page, function( data ) {
-            $('.source').html(data)
-            $('.source').parent().removeClass('hidden')
-          })
+
+      $('.templates-list select').change(function(e){
+        $('.source').parent().addClass('hidden')
+        page = $('.templates-list select').find(":selected").attr('value');
+        $.get( "<%= admin_template_path('page') %>?code="+getDomainCode() + "&page=" + page, function( data ) {
+          console.log(data)
+          $('.source').val(data);
+          $('.source').parent().removeClass('hidden')
         })
+      })
     });
   })
 
   $('.save-editing').click(function(e){
     template = $('.templates-list select').find(":selected").attr('value');
-
     $.ajax({
       type: 'PUT',
       url: '<%= admin_template_path('update') %>',
-      data: {source: $('.source').html(), code: getDomainCode(), template: template},
+      data: {source: $('.source').val(), code: getDomainCode(), template: template},
     })
   })
 </script>
